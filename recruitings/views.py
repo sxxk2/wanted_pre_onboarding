@@ -4,7 +4,7 @@ from django.http      import JsonResponse
 from django.views     import View
 from django.db.models import Q
 
-from recruitings.models import Recruiting
+from recruitings.models import Recruiting, Application
 
 
 class RecruitingView(View):
@@ -77,7 +77,7 @@ class RecruitingDetailView(View):
         try:
             data = json.loads(request.body)
 
-            position = data['position']
+            position   = data['position']
             reward     = data['reward']
             content    = data['content']
             tech_stack = data['tech_stack']
@@ -102,3 +102,22 @@ class RecruitingDetailView(View):
         recruiting.delete()
 
         return JsonResponse({'message' : '채용공고가 삭제되었습니다.'}, status=200)
+
+class ApplicationView(View):
+    # 6. 사용자는 채용공고에 지원합니다.
+    def post(self, request, recruiting_id, user_id):
+        if not Application.objects.filter(user__id=user_id).exists():
+            return JsonResponse({'message' : '이미 지원하셨습니다.'}, status=404)
+        try:
+            data = json.loads(request.body)
+
+            recruiting = data['recruiting_id']
+            user       = data['user_id']
+
+            Application.objects.create(
+                recruiting = recruiting,
+                user       = user,
+            )
+            return JsonResponse({'message' : '지원이 완료되었습니다.'}, status=201)
+        except KeyError:
+            return JsonResponse({'message': 'KEY ERROR'}, status=400)
