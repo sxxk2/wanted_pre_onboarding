@@ -28,3 +28,21 @@ class RecruitingView(View):
             return JsonResponse({'message' : '채용공고가 등록되었습니다.'}, status=201)
         except KeyError:
             return JsonResponse({'message': 'KEY ERROR'}, status=400)
+
+class RecruitingDetailView(View):
+    # 5. 채용 상세페이지를 가져옵니다.
+    def get(self, request, recruiting_id):
+        if not Recruiting.objects.filter(id=recruiting_id).exists():
+            return JsonResponse({'message' : '채용공고가 없습니다.'}, status=404)
+
+        recruiting = Recruiting.objects.get(id=recruiting_id)
+
+        result = {
+            'recruiting_id' : recruiting.id,
+            'company'       : recruiting.company.name,
+            'position'      : recruiting.position,
+            'reward'        : recruiting.reward,
+            'content'       : recruiting.content,
+            'tech_stack'    : recruiting.tech_stack
+        }
+        return JsonResponse({'result' : result}, status=200)
