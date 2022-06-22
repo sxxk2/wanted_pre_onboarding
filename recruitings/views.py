@@ -68,3 +68,11 @@ class RecruitingDetailView(View):
             return JsonResponse({'message': 채용공고가 수정되었습니다.}, status=201)
         except Recruiting.DoesNotExist:
             return JsonResponse({'message' : '없는 채용공고입니다.'}, status=401)
+    # 3. 채용공고를 삭제합니다.
+    def delete(self, request, recruiting_id):
+        if not Recruiting.objects.filter(id=recruiting_id).exists():
+            return JsonResponse({'message' : '채용공고가 없습니다.'}, status=404)
+        recruiting = Recruiting.objects.get(id=recruiting_id)
+        recruiting.delete()
+
+        return JsonResponse({'message' : '채용공고가 삭제되었습니다.'}, status=200)
