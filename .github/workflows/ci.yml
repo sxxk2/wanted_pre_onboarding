@@ -10,6 +10,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      DJANGO_SECRET_KEY: for-test
     strategy:
       matrix:
         python-version: [3.8]
@@ -37,5 +39,7 @@ jobs:
         pipenv install
 
     - name: Run Tests
+      env:
+        DJANGO_SECRET_KEY: ${{ env.DJANGO_SECRET_KEY }}
       run: |
         python manage.py test
